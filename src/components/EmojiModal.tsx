@@ -54,10 +54,10 @@ export default function EmojiModal({ isOpen, onClose }: EmojiModalProps) {
         <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] overflow-hidden border border-gray-100">
           <div className="p-6 border-b border-gray-100">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-primary-600">Emoji Dictionary</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Emoji Dictionary</h2>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-2"
+                className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors flex items-center gap-2"
               >
                 <span className="text-sm text-gray-500">ESC</span>
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
