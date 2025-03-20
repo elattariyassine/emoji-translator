@@ -1,103 +1,156 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { getEmojiTranslation, getEmojiSuggestions } from '@/lib/emojiDictionary';
+import { getUrlParams, generateShareUrl } from '@/lib/utils';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [inputText, setInputText] = useState('');
+  const [translation, setTranslation] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [copied, setCopied] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    // Check for shared translation in URL
+    const params = getUrlParams();
+    if (params?.text) {
+      setInputText(params.text);
+      if (params.emoji) {
+        setTranslation(params.emoji);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // Update translation when input changes
+    const translated = getEmojiTranslation(inputText);
+    setTranslation(translated);
+
+    // Update suggestions
+    const newSuggestions = getEmojiSuggestions(inputText);
+    setSuggestions(newSuggestions);
+  }, [inputText]);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(translation);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+    }
+  };
+
+  const handleShare = () => {
+    const shareUrl = generateShareUrl(inputText, translation);
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Emoji Translator
+          </h1>
+          <p className="text-xl text-gray-600">
+            Transform your text into emojis! Try typing something like "I love pizza" or "happy cat"
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Translation Interface */}
+        <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="input" className="block text-sm font-medium text-gray-700 mb-2">
+                Enter your text
+              </label>
+              <textarea
+                id="input"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                rows={3}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Type something like 'I love pizza'..."
+              />
+            </div>
+
+            {/* Suggestions */}
+            {suggestions.length > 0 && (
+              <div className="bg-gray-50 rounded-md p-3">
+                <p className="text-sm font-medium text-gray-700 mb-2">Suggestions:</p>
+                <div className="flex flex-wrap gap-2">
+                  {suggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      className="px-3 py-1 bg-white rounded-full text-sm border border-gray-200 hover:bg-purple-50"
+                      onClick={() => {
+                        const words = inputText.split(' ');
+                        words[words.length - 1] = suggestion.split(':')[0];
+                        setInputText(words.join(' '));
+                      }}
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Translation Result */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Translation
+              </label>
+              <div className="relative">
+                <div className="w-full px-4 py-2 bg-gray-50 rounded-md text-2xl min-h-[60px] flex items-center">
+                  {translation || 'Your emoji translation will appear here...'}
+                </div>
+                {translation && (
+                  <button
+                    onClick={handleCopy}
+                    className="absolute right-2 top-2 px-3 py-1 bg-purple-600 text-white rounded-md text-sm hover:bg-purple-700 transition-colors"
+                  >
+                    {copied ? 'Copied!' : 'Copy'}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Share Button */}
+            {translation && (
+              <button
+                onClick={handleShare}
+                className="w-full px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors"
+              >
+                Share Translation
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* How it Works Section */}
+        <div className="bg-white rounded-lg shadow-xl p-6">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">How it Works</h2>
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              1. Type any text in the input box above
+            </p>
+            <p className="text-gray-600">
+              2. Watch as your text is automatically translated into emojis
+            </p>
+            <p className="text-gray-600">
+              3. Get real-time suggestions as you type
+            </p>
+            <p className="text-gray-600">
+              4. Copy your translation or share it with friends
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
   );
 }
