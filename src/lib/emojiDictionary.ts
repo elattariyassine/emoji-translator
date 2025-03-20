@@ -10,6 +10,13 @@ export const emojiDictionary: { [key: string]: string } = {
   'wow': '😮',
   'cool': '😎',
   'heart': '❤️',
+  'joy': '😄',
+  'excited': '🤩',
+  'peaceful': '😌',
+  'grateful': '🙏',
+  'joyful': '😄',
+  'delighted': '😊',
+  'cheerful': '😃',
   
   // Food
   'pizza': '🍕',
@@ -68,6 +75,10 @@ export const emojiDictionary: { [key: string]: string } = {
   'work': '💼',
   'study': '📖',
   'play': '🎮',
+  'stroll': '🚶',
+  'wander': '🚶',
+  'explore': '🔍',
+  'hiking': '🥾',
   
   // Nature
   'tree': '🌳',
@@ -78,6 +89,9 @@ export const emojiDictionary: { [key: string]: string } = {
   'forest': '🌲',
   'desert': '🏜️',
   'river': '🌊',
+  'trail': '🌲',
+  'park': '🌳',
+  'outdoors': '🌿',
   
   // Time
   'morning': '🌅',
@@ -97,6 +111,7 @@ export const emojiDictionary: { [key: string]: string } = {
   'hello': '👋',
   'yes': '👍',
   'no': '👎',
+  'nature walk': '🌿',
 };
 
 export const getEmojiTranslation = (text: string): string => {
@@ -109,14 +124,14 @@ export const getEmojiTranslation = (text: string): string => {
     
     // Check for two-word phrases first
     if (nextWord && emojiDictionary[`${word} ${nextWord}`]) {
-      translation += emojiDictionary[`${word} ${nextWord}`];
+      translation += emojiDictionary[`${word} ${nextWord}`] + ' ';
       i++; // Skip the next word since we've used it
       continue;
     }
     
     // Check for single words
     if (emojiDictionary[word]) {
-      translation += emojiDictionary[word];
+      translation += emojiDictionary[word] + ' ';
     } else {
       // If no emoji found, keep the original word
       translation += word + ' ';

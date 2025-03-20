@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import { getEmojiTranslation, getEmojiSuggestions } from '@/lib/emojiDictionary';
 import { getUrlParams, generateShareUrl } from '@/lib/utils';
 
-export default function Home() {
+export default function EmojiTranslator() {
   const [inputText, setInputText] = useState('');
   const [translation, setTranslation] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Check for shared translation in URL
@@ -23,12 +24,16 @@ export default function Home() {
 
   useEffect(() => {
     // Update translation when input changes
+    setIsLoading(true);
     const translated = getEmojiTranslation(inputText);
     setTranslation(translated);
 
     // Update suggestions
     const newSuggestions = getEmojiSuggestions(inputText);
     setSuggestions(newSuggestions);
+    
+    // Simulate a small delay for better UX
+    setTimeout(() => setIsLoading(false), 300);
   }, [inputText]);
 
   const handleCopy = async () => {
@@ -49,105 +54,116 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-purple-50 to-pink-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-purple-50 transition-colors duration-300">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-16 animate-slide-up">
+          <h1 className="text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-purple-600">
             Emoji Translator
           </h1>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Transform your text into emojis! Try typing something like "I love pizza" or "happy cat"
           </p>
         </div>
 
-        {/* Translation Interface */}
-        <div className="bg-white rounded-lg shadow-xl p-6 mb-8">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="input" className="block text-sm font-medium text-gray-700 mb-2">
-                Enter your text
-              </label>
-              <textarea
-                id="input"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                rows={3}
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Type something like 'I love pizza'..."
-              />
-            </div>
+        {/* Main Content */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Translation Interface */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 transition-all duration-300 hover:shadow-xl">
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="input" className="block text-sm font-medium text-gray-700 mb-2">
+                  Enter your text
+                </label>
+                <textarea
+                  id="input"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 resize-none bg-white text-gray-900 placeholder-gray-500"
+                  rows={4}
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Type something like 'I love pizza'..."
+                />
+              </div>
 
-            {/* Suggestions */}
-            {suggestions.length > 0 && (
-              <div className="bg-gray-50 rounded-md p-3">
-                <p className="text-sm font-medium text-gray-700 mb-2">Suggestions:</p>
-                <div className="flex flex-wrap gap-2">
-                  {suggestions.map((suggestion, index) => (
+              {/* Suggestions */}
+              {suggestions.length > 0 && (
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 animate-fade-in">
+                  <p className="text-sm font-medium text-gray-700 mb-3">Suggestions:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {suggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        className="px-4 py-2 bg-white rounded-full text-sm border border-gray-200 hover:bg-primary-50 hover:border-primary-200 transition-all duration-200 text-gray-900"
+                        onClick={() => {
+                          const words = inputText.split(' ');
+                          words[words.length - 1] = suggestion.split(':')[0];
+                          setInputText(words.join(' '));
+                        }}
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Translation Result */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 transition-all duration-300 hover:shadow-xl">
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Translation
+                </label>
+                <div className="relative">
+                  <div className={`w-full px-6 py-4 bg-gray-50 rounded-xl text-3xl min-h-[120px] flex items-center border border-gray-100 text-gray-900 transition-all duration-300 ${isLoading ? 'opacity-50' : ''}`}>
+                    {isLoading ? 'Translating...' : (translation || 'Your emoji translation will appear here...')}
+                  </div>
+                  {translation && (
                     <button
-                      key={index}
-                      className="px-3 py-1 bg-white rounded-full text-sm border border-gray-200 hover:bg-purple-50"
-                      onClick={() => {
-                        const words = inputText.split(' ');
-                        words[words.length - 1] = suggestion.split(':')[0];
-                        setInputText(words.join(' '));
-                      }}
+                      onClick={handleCopy}
+                      className="absolute right-3 top-3 px-4 py-2 bg-primary-600 text-white rounded-lg text-sm hover:bg-primary-700 transition-all duration-200 shadow-sm"
                     >
-                      {suggestion}
+                      {copied ? 'Copied!' : 'Copy'}
                     </button>
-                  ))}
+                  )}
                 </div>
               </div>
-            )}
 
-            {/* Translation Result */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Translation
-              </label>
-              <div className="relative">
-                <div className="w-full px-4 py-2 bg-gray-50 rounded-md text-2xl min-h-[60px] flex items-center">
-                  {translation || 'Your emoji translation will appear here...'}
-                </div>
-                {translation && (
-                  <button
-                    onClick={handleCopy}
-                    className="absolute right-2 top-2 px-3 py-1 bg-purple-600 text-white rounded-md text-sm hover:bg-purple-700 transition-colors"
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
-                )}
-              </div>
+              {/* Share Button */}
+              {translation && (
+                <button
+                  onClick={handleShare}
+                  className="w-full px-4 py-3 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl hover:from-primary-700 hover:to-purple-700 transition-all duration-200 shadow-md font-medium"
+                >
+                  Share Translation
+                </button>
+              )}
             </div>
-
-            {/* Share Button */}
-            {translation && (
-              <button
-                onClick={handleShare}
-                className="w-full px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700 transition-colors"
-              >
-                Share Translation
-              </button>
-            )}
           </div>
         </div>
 
         {/* How it Works Section */}
-        <div className="bg-white rounded-lg shadow-xl p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">How it Works</h2>
-          <div className="space-y-4">
-            <p className="text-gray-600">
-              1. Type any text in the input box above
-            </p>
-            <p className="text-gray-600">
-              2. Watch as your text is automatically translated into emojis
-            </p>
-            <p className="text-gray-600">
-              3. Get real-time suggestions as you type
-            </p>
-            <p className="text-gray-600">
-              4. Copy your translation or share it with friends
-            </p>
+        <div className="mt-16 bg-white rounded-2xl shadow-lg p-8 border border-gray-100 transition-all duration-300 hover:shadow-xl">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">How it Works</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 transition-all duration-200 hover:border-primary-200">
+              <div className="text-2xl mb-2">1️⃣</div>
+              <p className="text-gray-600">Type any text in the input box</p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 transition-all duration-200 hover:border-primary-200">
+              <div className="text-2xl mb-2">2️⃣</div>
+              <p className="text-gray-600">Watch automatic emoji translation</p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 transition-all duration-200 hover:border-primary-200">
+              <div className="text-2xl mb-2">3️⃣</div>
+              <p className="text-gray-600">Get real-time suggestions</p>
+            </div>
+            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 transition-all duration-200 hover:border-primary-200">
+              <div className="text-2xl mb-2">4️⃣</div>
+              <p className="text-gray-600">Share with friends</p>
+            </div>
           </div>
         </div>
       </div>
