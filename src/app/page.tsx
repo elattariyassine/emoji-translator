@@ -101,7 +101,7 @@ export default function EmojiTranslator() {
               Emoji Translator
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Transform your text into emojis! Try typing something like "I love pizza" or "happy cat"
+              Transform your text into emojis! Try typing something like &#34;I love pizza&#34; or &#34;happy cat&#34;
             </p>
           </div>
 

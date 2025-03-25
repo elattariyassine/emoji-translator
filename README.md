@@ -1,6 +1,6 @@
 # Emoji Translator
 
-A modern web application that translates text into emojis. Built with Next.js and Tailwind CSS.
+A fun and interactive Emoji Translator built with Next.js and Tailwind CSS! Convert text into emoji-based expressions and decode emojis back into words. Supports real-time translation, copy-to-clipboard, and customizable emoji mappings. 🚀
 
 ## Features
 
