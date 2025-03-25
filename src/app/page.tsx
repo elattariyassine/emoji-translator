@@ -116,7 +116,7 @@ export default function EmojiTranslator() {
                   </label>
                   <textarea
                     id="input"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200 resize-none bg-white text-gray-800 placeholder-gray-400"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-primary-500 transition-all duration-200 resize-none bg-white text-gray-800 placeholder-gray-400"
                     rows={4}
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
@@ -125,7 +125,7 @@ export default function EmojiTranslator() {
                 </div>
 
                 {/* Suggestions */}
-                {suggestions.length > 0 && (
+                {suggestions.length > 0 ? (
                   <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 animate-fade-in">
                     <p className="text-sm font-medium text-gray-700 mb-3">Suggestions:</p>
                     <div className="flex flex-wrap gap-2">
@@ -142,6 +142,28 @@ export default function EmojiTranslator() {
                           {suggestion}
                         </button>
                       ))}
+                    </div>
+                  </div>
+                ) : inputText && (
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 animate-fade-in">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-500">No suggestions found</p>
+                      <a
+                        href="https://github.com/elattariyassine/emoji-translator/blob/main/src/lib/emojiDictionary.ts"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1 group"
+                      >
+                        <span>Add this emoji</span>
+                        <svg
+                          className="w-4 h-4 transform group-hover:translate-x-0.5 transition-transform"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </a>
                     </div>
                   </div>
                 )}
